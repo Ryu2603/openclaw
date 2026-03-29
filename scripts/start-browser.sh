@@ -11,7 +11,7 @@ mkdir -p "$PROFILE_DIR"
 
 # Permite ao browseruser escrever no diretório
 if [ "$(stat -c '%U' "$PROFILE_DIR")" != "browseruser" ]; then
-    chown -R browseruser:browseruser "$PROFILE_DIR" 2>/dev/null || true
+    chown -R 1001:1001 "$PROFILE_DIR" 2>/dev/null || true
 fi
 
 # Tamanho da tela virtual (usado pelo Xvfb se disponível)

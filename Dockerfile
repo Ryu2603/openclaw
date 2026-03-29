@@ -44,13 +44,16 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # ── 2. Usuário sem privilégios para o browser ─────────────────────────
-RUN groupadd -r browseruser --gid=999 2>/dev/null || true && \
-    useradd -r -g browseruser --uid=999 \
+# Usa UID/GID fixos e não depende de nome para o chown (evita falha se já existir)
+RUN groupadd -r browseruser --gid=1001 2>/dev/null || \
+        groupmod -n browseruser $(getent group 1001 | cut -d: -f1) 2>/dev/null || true && \
+    useradd -r -g 1001 --uid=1001 \
         --home-dir=/home/browseruser \
         --shell=/bin/bash \
+        --no-create-home \
         browseruser 2>/dev/null || true && \
     mkdir -p /home/browseruser && \
-    chown -R browseruser:browseruser /home/browseruser
+    chown -R 1001:1001 /home/browseruser
 
 # ── 3. Nginx CDP proxy config ─────────────────────────────────────────
 # Arquivo de config separado para o proxy CDP (porta 9223)

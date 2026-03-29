@@ -23,7 +23,7 @@ mkdir -p /data/workspace
 mkdir -p /data/browser-profile
 
 # Garante permissão de escrita para browseruser no perfil
-chown -R browseruser:browseruser /data/browser-profile 2>/dev/null || true
+chown -R 1001:1001 /data/browser-profile 2>/dev/null || true
 
 # ── Porta do gateway (interna, openclaw escuta aqui) ─────────────────
 export OPENCLAW_GATEWAY_PORT="${OPENCLAW_GATEWAY_PORT:-18789}"
