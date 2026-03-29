@@ -39,8 +39,7 @@ exec "$CHROMIUM_BIN" \
     --disable-dev-shm-usage \
     --disable-gpu \
     --headless=new \
-    --no-zygote \
-    --single-process \
+    --disable-seccomp-filter-sandbox \
     --disable-dbus \
     --window-size=1920,1080 \
     --hide-scrollbars \

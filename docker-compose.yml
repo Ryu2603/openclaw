@@ -66,6 +66,10 @@ services:
     # Memória compartilhada para o Chromium (evita crashes em páginas pesadas)
     shm_size: '2gb'
 
+    # Necessário para o Chromium funcionar sem SIGTRAP em ARM64/Docker
+    security_opt:
+      - seccomp:unconfined
+
     restart: unless-stopped
 
     healthcheck:
