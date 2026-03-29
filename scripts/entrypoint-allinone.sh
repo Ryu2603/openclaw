@@ -30,7 +30,7 @@ export OPENCLAW_GATEWAY_PORT="${OPENCLAW_GATEWAY_PORT:-18789}"
 export PORT="${PORT:-8080}"
 
 # ── Define CDP URL para o browser local ──────────────────────────────
-export BROWSER_CDP_URL="${BROWSER_CDP_URL:-http://127.0.0.1:9224}"
+export BROWSER_CDP_URL="${BROWSER_CDP_URL:-http://127.0.0.1:9222}"
 export BROWSER_EVALUATE_ENABLED="${BROWSER_EVALUATE_ENABLED:-true}"
 
 echo "[entrypoint] PORT=$PORT | GATEWAY_PORT=$OPENCLAW_GATEWAY_PORT"

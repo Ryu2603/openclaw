@@ -38,11 +38,11 @@ services:
       # ── Gateway token (estável entre redeploys) ───────────────────
       - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
 
-      # ── Browser CDP (all-in-one: Chrome na 9222, nginx proxy na 9224) ──
-      # IMPORTANTE: NÃO use BROWSER_DEFAULT_PROFILE=openclaw
-      # (openclaw reserva porta 9223 para esse profile → conflito com nginx)
-      # Deixar sem BROWSER_DEFAULT_PROFILE faz openclaw usar BROWSER_CDP_URL direto.
-      - BROWSER_CDP_URL=http://127.0.0.1:9224
+      # ── Browser CDP (all-in-one: conexão direta ao Chrome na 9222) ──
+      # Sem nginx intermediário — em all-in-one openclaw e Chrome estão no
+      # mesmo host, então o CDP funciona direto sem reescrita de Host header.
+      # O nginx proxy causava problema: retornava ws://localhost sem porta.
+      - BROWSER_CDP_URL=http://127.0.0.1:9222
       - BROWSER_EVALUATE_ENABLED=true
       # Habilita o sandbox browser (necessário para browser tool funcionar via CDP)
       - OPENCLAW__agents__defaults__sandbox__browser__enabled=true
