@@ -1,0 +1,87 @@
+# =============================================================================
+# docker-compose.yml — OpenClaw All-in-One para Coolify (ARM64 / Oracle VPS)
+#
+# Um único container com OpenClaw + Chromium browser embutido.
+# Configurado para deploy via Coolify.
+#
+# Para fazer redeploy sem perder dados: apenas reinicia o container.
+# Para atualizar versão: mude a tag da imagem em "image:" e redeploy.
+# =============================================================================
+
+services:
+  openclaw:
+    # ── Opção A: usar imagem pré-buildada (push para seu registry) ──
+    # image: ghcr.io/SEU_USUARIO/openclaw-allinone:latest
+
+    # ── Opção B: build local no Coolify (recomendado) ──
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    container_name: openclaw-allinone
+    
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"
+    
+    environment:
+      # ── AI Provider (ao menos um é obrigatório) ───────────────────
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      # Adicione outros providers conforme necessário
+
+      # ── Autenticação da UI ────────────────────────────────────────
+      - AUTH_USERNAME=${AUTH_USERNAME:-admin}
+      - AUTH_PASSWORD=${AUTH_PASSWORD:?AUTH_PASSWORD é obrigatório}
+
+      # ── Gateway token (estável entre redeploys) ───────────────────
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+
+      # ── Browser CDP local (all-in-one: aponta para 127.0.0.1) ────
+      # Não altere — o browser sobe no mesmo container
+      - BROWSER_CDP_URL=http://127.0.0.1:9223
+      - BROWSER_DEFAULT_PROFILE=openclaw
+      - BROWSER_EVALUATE_ENABLED=true
+
+      # ── CORS / Origens permitidas ─────────────────────────────────
+      - OPENCLAW_ALLOWED_ORIGINS=${OPENCLAW_ALLOWED_ORIGINS:-}
+
+      # ── Porta ─────────────────────────────────────────────────────
+      - PORT=${PORT:-8080}
+
+      # ── Fuso horário ──────────────────────────────────────────────
+      - TZ=${TZ:-America/Sao_Paulo}
+
+      # ── Configurações opcionais via dot-notation ──────────────────
+      # - OPENCLAW__channels__telegram__textChunkLimit=3500
+
+    volumes:
+      # Dados persistentes: state, config, workspace, perfil do browser
+      - openclaw-data:/data
+
+      # Opcional: monte um openclaw.json customizado
+      # - ./my-openclaw.json:/app/config/openclaw.json:ro
+
+    # Memória compartilhada para o Chromium (evita crashes em páginas pesadas)
+    shm_size: '2gb'
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:${PORT:-8080}/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+    # Logging limpo
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+volumes:
+  openclaw-data:
+    driver: local
